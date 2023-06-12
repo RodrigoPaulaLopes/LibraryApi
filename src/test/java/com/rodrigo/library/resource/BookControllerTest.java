@@ -1,6 +1,5 @@
-package com.rodrigo.library.api.resource;
+package com.rodrigo.library.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,32 +11,41 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @WebMvcTest
 @AutoConfigureMockMvc
-public class BookController {
+public class BookControllerTest {
 
     static String BOOK_API = "/api/books";
     @Autowired
     MockMvc mvc;
 
+    @Autowired
+    ObjectMapper mapper;
+
     @Test
     @DisplayName("Deve criar um livro com sucesso")
     public void createBookTest() throws Exception {
-        var json = new ObjectMapper().writeValueAsString(null);
-        var request = MockMvcRequestBuilders.post(BOOK_API).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(json);
+        var json = mapper.writeValueAsString(null);
+        var request = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
 
         mvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("title").value("meu livro"))
-                .andExpect(MockMvcResultMatchers.jsonPath("author").value("Autor"))
-                .andExpect(MockMvcResultMatchers.jsonPath("isbn").value("123123"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("id").isNotEmpty())
+                .andExpect(jsonPath("title").value("meu livro"))
+                .andExpect(jsonPath("author").value("Autor"))
+                .andExpect(jsonPath("isbn").value("123123"));
 
     }
 
