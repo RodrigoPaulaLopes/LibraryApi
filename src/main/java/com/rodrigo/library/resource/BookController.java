@@ -2,21 +2,26 @@ package com.rodrigo.library.resource;
 
 
 import com.rodrigo.library.dto.BookDTO;
+import com.rodrigo.library.models.entity.Book;
+import com.rodrigo.library.services.BookService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
+
+    @Autowired
+    BookService bookService;
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookDTO createBook(){
-       var dados = new BookDTO(1L, "meu livro", "Autor", "123123");
-
-       return dados;
+    public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO dados, UriComponentsBuilder builder){
+        var uri = builder.path("/api/books/{id}").buildAndExpand(dados.id()).toUri();
+        var entity = bookService.save(new Book(dados));
+       return ResponseEntity.created(uri).body(new BookDTO(entity));
     }
 }
