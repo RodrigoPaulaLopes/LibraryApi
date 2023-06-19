@@ -1,24 +1,26 @@
 package com.rodrigo.library.services.impl;
 
+import com.rodrigo.library.exceptions.BusinessException;
 import com.rodrigo.library.models.entity.Book;
 import com.rodrigo.library.repository.BookRepository;
-import com.rodrigo.library.services.BookService;
-import org.antlr.v4.runtime.misc.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BookServiceImpl implements BookService {
+public class BookService {
 
 
     BookRepository repository;
 
-    public BookServiceImpl(BookRepository repository){
+    public BookService(BookRepository repository) {
         this.repository = repository;
     }
 
-    @Override
     public Book save(Book book) {
+
+        if (repository.existsByIsbn(book.getIsbn())) {
+            throw new BusinessException("isbn repetido");
+        }
         return repository.save(book);
     }
 }

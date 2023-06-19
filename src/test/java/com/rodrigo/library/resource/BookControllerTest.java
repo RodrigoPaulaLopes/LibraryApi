@@ -1,10 +1,10 @@
 package com.rodrigo.library.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rodrigo.library.dto.BookDTO;
+import com.rodrigo.library.exceptions.BusinessException;
 import com.rodrigo.library.models.entity.Book;
-import com.rodrigo.library.services.BookService;
+import com.rodrigo.library.services.impl.BookService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +49,7 @@ public class BookControllerTest {
         var book = new Book(1L, "Meu Livro", "Rodrigo Lopes", "123123");
         BDDMockito.given(bookService.save(Mockito.any(Book.class))).willReturn(book);
 
-//        transformando os dados em json
+        //transformando os dados em json
         var json = mapper.writeValueAsString(dto);
 
         //criando o request
@@ -83,5 +83,20 @@ public class BookControllerTest {
         mvc.perform(request)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", hasSize(3)));
+    }
+
+    @Test
+    @DisplayName("Deve lançar erro quando cadastrar novamente o mesmo isbn")
+    public void createBookWithDuplicatedIsbn() throws Exception{
+        var dto = new BookDTO(1L, "Meu Livro", "Rodrigo Lopes", "123123");
+        var json = mapper.writeValueAsString(dto);
+        BDDMockito.given(bookService.save(Mockito.any(Book.class))).willThrow(new BusinessException("isbn repetido"));
+
+        var request = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).content(json);
+
+        mvc.perform(request).andExpect(status().isBadRequest()).andExpect(jsonPath("errors").value("isbn repetido"));
     }
 }

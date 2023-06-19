@@ -3,7 +3,7 @@ package com.rodrigo.library.resource;
 
 import com.rodrigo.library.dto.BookDTO;
 import com.rodrigo.library.models.entity.Book;
-import com.rodrigo.library.services.BookService;
+import com.rodrigo.library.services.impl.BookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

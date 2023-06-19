@@ -16,7 +16,14 @@ public class Exceptions {
         return ResponseEntity.badRequest().body(error.stream().map(Validacao::new).toList());
     }
 
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity methodNotValid(BusinessException ex){
+        var error = ex.getMessage();
+        return ResponseEntity.badRequest().body(new Message(error));
+    }
 
+    public record Message(String errors){
+    }
     public record Validacao(String campo, String mensagem){
         public Validacao(FieldError campos){
             this(campos.getField(), campos.getDefaultMessage());
