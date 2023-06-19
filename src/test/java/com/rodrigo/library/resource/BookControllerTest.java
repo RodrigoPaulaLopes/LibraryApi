@@ -1,10 +1,12 @@
 package com.rodrigo.library.resource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rodrigo.library.dto.BookDTO;
 import com.rodrigo.library.exceptions.BusinessException;
 import com.rodrigo.library.models.entity.Book;
 import com.rodrigo.library.services.impl.BookService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -87,7 +89,7 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("Deve lançar erro quando cadastrar novamente o mesmo isbn")
-    public void createBookWithDuplicatedIsbn() throws Exception{
+    public void createBookWithDuplicatedIsbn() throws Exception {
         var dto = new BookDTO(1L, "Meu Livro", "Rodrigo Lopes", "123123");
         var json = mapper.writeValueAsString(dto);
         BDDMockito.given(bookService.save(Mockito.any(Book.class))).willThrow(new BusinessException("isbn repetido"));
@@ -98,5 +100,54 @@ public class BookControllerTest {
                 .accept(MediaType.APPLICATION_JSON).content(json);
 
         mvc.perform(request).andExpect(status().isBadRequest()).andExpect(jsonPath("errors").value("isbn repetido"));
+    }
+
+
+    @Test
+    @DisplayName("Deve retornar um livro buscado")
+    public void returnBook() throws Exception {
+        //cenario
+        var book = new Book(1L, "Meu Livro", "Rodrigo Lopes", "123123");
+        var dto = new BookDTO(book);
+        BDDMockito.given(bookService.findOne(book.getId())).willReturn(book);
+
+        var json = mapper.writeValueAsString(dto);
+
+        //execução
+
+        var request = MockMvcRequestBuilders
+                .get(BOOK_API.concat("/"+dto.id()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).content(json);
+
+        //verificação
+
+        mvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(1L))
+                .andExpect(jsonPath("title").value("Meu Livro"))
+                .andExpect(jsonPath("author").value("Rodrigo Lopes"))
+                .andExpect(jsonPath("isbn").value("123123"));
+
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro por não encontrar um livro buscado")
+    public void returnNotFoundBook() throws Exception {
+        //cenario
+
+        BDDMockito.given(bookService.findOne(Mockito.anyLong())).willThrow(EntityNotFoundException.class);
+
+        //execução
+        var request = MockMvcRequestBuilders
+                .get(BOOK_API.concat("/"+1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON);
+
+        //verificação
+
+        mvc.perform(request)
+                .andExpect(status().isNotFound()).andExpect(jsonPath("errors" ).value("Book not found"));
+
     }
 }

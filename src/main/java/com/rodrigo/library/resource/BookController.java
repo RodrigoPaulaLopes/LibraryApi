@@ -18,10 +18,15 @@ public class BookController {
     @Autowired
     BookService bookService;
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO dados, UriComponentsBuilder builder){
         var uri = builder.path("/api/books/{id}").buildAndExpand(dados.id()).toUri();
         var entity = bookService.save(new Book(dados));
        return ResponseEntity.created(uri).body(new BookDTO(entity));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookDTO> createBook(@PathVariable Long id){
+        var entity = bookService.findOne(id);
+        return ResponseEntity.ok().body(new BookDTO(entity));
     }
 }

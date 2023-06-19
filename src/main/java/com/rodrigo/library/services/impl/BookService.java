@@ -23,4 +23,8 @@ public class BookService {
         }
         return repository.save(book);
     }
+
+    public Book findOne(Long id){
+        return repository.getReferenceById(id);
+    }
 }
