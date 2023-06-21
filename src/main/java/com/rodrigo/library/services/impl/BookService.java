@@ -30,10 +30,17 @@ public class BookService {
     }
 
     public void delete(Book entity){
-        repository.delete(entity);
+        var newEntity = this.findOne(entity.getId());
+
+        if(newEntity == null) throw new EntityNotFoundException("Book not found");
+
+        repository.delete(newEntity);
     }
 
     public Book update(Book entity){
+        var newEntity = this.findOne(entity.getId());
+
+        if(newEntity == null) throw new EntityNotFoundException("Book not found");
         return repository.save(entity);
     }
 }
