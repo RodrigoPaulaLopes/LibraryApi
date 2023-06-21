@@ -3,6 +3,7 @@ package com.rodrigo.library.services.impl;
 import com.rodrigo.library.exceptions.BusinessException;
 import com.rodrigo.library.models.entity.Book;
 import com.rodrigo.library.repository.BookRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +27,13 @@ public class BookService {
 
     public Book findOne(Long id){
         return repository.getReferenceById(id);
+    }
+
+    public void delete(Book entity){
+        repository.delete(entity);
+    }
+
+    public Book update(Book entity){
+        return repository.save(entity);
     }
 }

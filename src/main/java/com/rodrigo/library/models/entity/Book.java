@@ -43,4 +43,10 @@ public class Book {
         this.setIsbn(isbn);
 
     }
+
+    public void updateData(BookDTO dados){
+        this.setTitle(dados.title());
+        this.setAuthor(dados.author());
+        this.setIsbn(dados.isbn());
+    }
 }

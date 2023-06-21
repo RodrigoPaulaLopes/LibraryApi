@@ -116,7 +116,7 @@ public class BookControllerTest {
         //execução
 
         var request = MockMvcRequestBuilders
-                .get(BOOK_API.concat("/"+dto.id()))
+                .get(BOOK_API.concat("/" + dto.id()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON).content(json);
 
@@ -140,14 +140,111 @@ public class BookControllerTest {
 
         //execução
         var request = MockMvcRequestBuilders
-                .get(BOOK_API.concat("/"+1))
+                .get(BOOK_API.concat("/" + 1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
 
         //verificação
 
         mvc.perform(request)
-                .andExpect(status().isNotFound()).andExpect(jsonPath("errors" ).value("Book not found"));
+                .andExpect(status().isNotFound()).andExpect(jsonPath("errors").value("Book not found"));
+
+    }
+
+    @Test
+    @DisplayName("Deve excluir um livro")
+    public void mustDeleteBook() throws Exception {
+        //cenario
+        var book = new Book(1L, "Meu Livro", "Rodrigo Lopes", "123123");
+        BDDMockito.given(bookService.findOne(Mockito.anyLong())).willReturn(book);
+
+        //execução
+
+        var request = MockMvcRequestBuilders
+                .delete(BOOK_API.concat("/" + book.getId()))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+
+        //verificação
+
+        mvc.perform(request).andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao excluir um livro")
+    public void mustreturnErrorWhenDeleteBookThatNotExists() throws Exception {
+        //cenario
+        BDDMockito.given(bookService.findOne(Mockito.anyLong())).willThrow(new EntityNotFoundException("Book not found"));
+
+        //execução
+
+        var request = MockMvcRequestBuilders
+                .delete(BOOK_API.concat("/" + 1))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+
+        //verificação
+
+        mvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("errors").value("Book not found"));
+
+    }
+
+    @Test
+    @DisplayName("Deve atualizar um livro")
+    public void mustUpdateBook() throws Exception {
+        //cenario
+        var book = new Book(1L, "Meu Livro", "Rodrigo Lopes", "123123");
+        var dto = new BookDTO(book);
+
+        BDDMockito.given(bookService.findOne(1L)).willReturn(book);
+
+        BDDMockito.given(bookService.update(book)).willReturn(book);
+        //execução
+
+        var request = MockMvcRequestBuilders
+                .put(BOOK_API)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(dto));
+
+
+        //verificação
+
+        mvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(1L))
+                .andExpect(jsonPath("title").value("Meu Livro"))
+                .andExpect(jsonPath("author").value("Rodrigo Lopes"))
+                .andExpect(jsonPath("isbn").value("123123"));;
+
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao atualizar um livro não existente")
+    public void mustreturnErrorWhenUpdateBookThatNotExists() throws Exception {
+        //cenario
+        var book = new Book(1L, "Meu Livro", "Rodrigo Lopes", "123123");
+        var dto = new BookDTO(book);
+        BDDMockito.given(bookService.findOne(dto.id())).willThrow(new EntityNotFoundException("Book not found"));
+
+        //execução
+
+        var request = MockMvcRequestBuilders
+                .put(BOOK_API)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(dto));
+
+
+        //verificação
+
+        mvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("errors").value("Book not found"));
 
     }
 }
