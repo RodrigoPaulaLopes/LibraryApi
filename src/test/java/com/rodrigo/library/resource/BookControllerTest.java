@@ -29,17 +29,16 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest
+@WebMvcTest(BookControllerTest.class)
 @AutoConfigureMockMvc
 public class BookControllerTest {
 
-    static String BOOK_API = "/api/books";
+    static String BOOK_API = "/api/v1/books";
     @Autowired
     MockMvc mvc;
 

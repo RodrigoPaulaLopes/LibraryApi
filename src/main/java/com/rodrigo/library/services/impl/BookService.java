@@ -49,4 +49,8 @@ public class BookService {
     public Page<Book> findAll(Pageable paginacao) {
         return repository.findAll(paginacao);
     }
+
+    public Book getBookByIsbn(String isbn) {
+        return repository.getBookByIsbn(isbn);
+    }
 }
