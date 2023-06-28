@@ -14,8 +14,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.awt.print.Pageable;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,6 +40,19 @@ public class BookServiceTest {
     }
 
 
+    @Test
+    @DisplayName("Deve retornar todos os livros")
+    public void allBooksTest(){
+        //cenario
+        var books = Arrays.asList(new Book(1L, "Meu Livro", "Rodrigo Lopes", "123123"));
+        Mockito.when(repository.findAll()).thenReturn(books);
+        //execução
+        var booksReturned = repository.findAll();
+        //verificação
+
+        Assertions.assertThat(booksReturned).isNotEmpty();
+        Assertions.assertThat(booksReturned).hasSize(1);
+    }
     @Test
     @DisplayName("Deve criar um livro com sucesso")
     public void saveBookTest() {

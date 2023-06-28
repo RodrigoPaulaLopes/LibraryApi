@@ -7,8 +7,11 @@ import com.rodrigo.library.services.impl.BookService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -18,7 +21,13 @@ public class BookController {
 
     @Autowired
     BookService bookService;
+
+    @GetMapping
+    public ResponseEntity<Page<BookDTO>> findAll(Pageable paginacao){
+        return ResponseEntity.ok().body(bookService.findAll(paginacao).map(BookDTO::new));
+    }
     @PostMapping
+    @Transactional
     public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO dados, UriComponentsBuilder builder){
         var uri = builder.path("/api/books/{id}").buildAndExpand(dados.id()).toUri();
         var entity = bookService.save(new Book(dados));
@@ -41,6 +50,7 @@ public class BookController {
     }
 
     @PutMapping
+    @Transactional
     public ResponseEntity<BookDTO> updateBook(@RequestBody BookDTO dados){
 
         //buscar o livro na base de dados

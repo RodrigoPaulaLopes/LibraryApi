@@ -16,11 +16,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -42,6 +48,23 @@ public class BookControllerTest {
 
     @MockBean
     BookService bookService;
+
+    @Test
+    @DisplayName("Deve retornar todos os livros da base de dados")
+    public void allBooksTest() throws Exception {
+        //cenario
+        var booksDto = new BookDTO(1L, "Meu Livro", "Rodrigo Lopes", "123123");
+        var books = new Book(booksDto);
+        BDDMockito.given(bookService.findAll(Mockito.any(Pageable.class))).willReturn(new PageImpl(Arrays.asList(books), PageRequest.of(0, 100), 1));
+
+        //execução
+        String queryString = "?page=0&size=100";
+        var request = MockMvcRequestBuilders.get(BOOK_API.concat(queryString)).accept(MediaType.APPLICATION_JSON);
+
+        //verificação
+
+        mvc.perform(request).andExpect(status().isOk()).andExpect(jsonPath("content").isNotEmpty()).andExpect(jsonPath("content", hasSize(1)));
+    }
 
     @Test
     @DisplayName("Deve criar um livro com sucesso")
