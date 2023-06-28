@@ -1,6 +1,7 @@
 package com.rodrigo.library.repository;
 
 
+import com.rodrigo.library.dto.BookDTO;
 import com.rodrigo.library.models.entity.Book;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -59,4 +60,40 @@ public class BookRepositoryTest {
         Assertions.assertThat(exists).isFalse();
     }
 
+
+    @Test
+    @DisplayName("Deve salvar um livro na base de dados")
+    public void saveBookTest(){
+        //cenario
+        var book = new Book(1L, "Meu Livro", "Rodrigo Lopes", "123123");
+        //execução
+
+        var savedBook = bookRepository.save(book);
+
+        //verificação
+
+        Assertions.assertThat(savedBook.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Deve deletar um livro")
+    public void deleteBookTest(){
+        //cenario
+        //criei um livro e persisti ele na base de dados
+        var book = new Book("Meu Livro 2", "claudio soarez", "12456");
+        entityManager.persist(book);
+        //execução
+
+        //procurei o livro salvo na base de dados
+        var foundBook = entityManager.find(Book.class, book.getId());
+        //deletei ele com o metodo delete do repository
+        bookRepository.delete(foundBook);
+
+        //procurei novamente esse livro
+        var deletedBook = entityManager.find(Book.class, book.getId());
+
+        //verificação
+        //agora verifico se ele é null
+        Assertions.assertThat(deletedBook).isNull();
+    }
 }
