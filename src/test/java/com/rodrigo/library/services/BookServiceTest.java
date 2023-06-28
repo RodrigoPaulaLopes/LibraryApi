@@ -115,6 +115,8 @@ public class BookServiceTest {
         var bookDto = new BookDTO(1L, "Meu Livro", "Rodrigo Lopes", "123123");
         var book = new Book(bookDto);
 
+        Mockito.when(repository.getReferenceById(book.getId())).thenReturn(book);
+
         //execução
         org.junit.jupiter.api.Assertions.assertDoesNotThrow(() ->  bookService.delete(book));
 
@@ -174,6 +176,4 @@ public class BookServiceTest {
         Assertions.assertThat(updatedBook.getAuthor()).isEqualTo(book.getAuthor());
         Assertions.assertThat(updatedBook.getIsbn()).isEqualTo(book.getIsbn());
     }
-
-
 }
