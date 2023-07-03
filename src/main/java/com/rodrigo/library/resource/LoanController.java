@@ -15,9 +15,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/api/v1/loans")
 public class LoanController {
-
-    @Autowired
     private LoanService loanService;
+
+    public LoanController(LoanService loanService){
+        this.loanService = loanService;
+    }
 
     @PostMapping
     public ResponseEntity<LoanDTO> create(@Valid @RequestBody LoanDTO dto, UriComponentsBuilder builder){

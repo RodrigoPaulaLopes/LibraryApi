@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -29,6 +32,10 @@ public class Book {
     @Column
     private String isbn;
 
+
+    @OneToMany(mappedBy = "book")
+    private List<Loan> loans = new ArrayList<>();
+
     public Book(BookDTO dados) {
         this.setId(dados.id());
         this.setTitle(dados.title());
@@ -37,14 +44,21 @@ public class Book {
 
     }
 
+
     public Book(String title, String author, String isbn) {
         this.setTitle(title);
         this.setAuthor(author);
         this.setIsbn(isbn);
 
     }
+    public Book(Long id, String title, String author, String isbn) {
+        this.setId(id);
+        this.setTitle(title);
+        this.setAuthor(author);
+        this.setIsbn(isbn);
 
-    public void updateData(BookDTO dados){
+    }
+    public void updateData(BookDTO dados) {
         this.setTitle(dados.title());
         this.setAuthor(dados.author());
         this.setIsbn(dados.isbn());
