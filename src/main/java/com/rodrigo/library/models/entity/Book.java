@@ -1,6 +1,7 @@
 package com.rodrigo.library.models.entity;
 
 import com.rodrigo.library.dto.BookDTO;
+import com.rodrigo.library.dto.CreateBookDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,6 +39,12 @@ public class Book {
 
     public Book(BookDTO dados) {
         this.setId(dados.id());
+        this.setTitle(dados.title());
+        this.setAuthor(dados.author());
+        this.setIsbn(dados.isbn());
+
+    }
+    public Book(CreateBookDTO dados) {
         this.setTitle(dados.title());
         this.setAuthor(dados.author());
         this.setIsbn(dados.isbn());

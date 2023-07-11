@@ -23,11 +23,22 @@ public class Exceptions {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message("Book not found"));
 
     }
+    @ExceptionHandler(BookAlreadyLoanedException.class)
+    public ResponseEntity bookAlreadyLoaned(BookAlreadyLoanedException e){
+        var error = e.getMessage();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(error));
+
+    }
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity methodNotValid(BusinessException ex){
         var error = ex.getMessage();
         return ResponseEntity.badRequest().body(new Message(error));
+    }
+    @ExceptionHandler(LoanNotFoundException.class)
+    public ResponseEntity loanException(LoanNotFoundException ex){
+        var error = ex.getMessage();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(error));
     }
 
     public record Message(String errors){

@@ -2,6 +2,7 @@ package com.rodrigo.library.resource;
 
 
 import com.rodrigo.library.dto.BookDTO;
+import com.rodrigo.library.dto.CreateBookDTO;
 import com.rodrigo.library.models.entity.Book;
 import com.rodrigo.library.services.impl.BookService;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,10 +29,10 @@ public class BookController {
     }
     @PostMapping
     @Transactional
-    public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO dados, UriComponentsBuilder builder){
-        var uri = builder.path("/api/books/{id}").buildAndExpand(dados.id()).toUri();
+    public ResponseEntity<BookDTO> createBook(@Valid @RequestBody CreateBookDTO dados, UriComponentsBuilder builder){
         var entity = bookService.save(new Book(dados));
-       return ResponseEntity.created(uri).body(new BookDTO(entity));
+        var uri = builder.path("/api/books/{id}").buildAndExpand(entity.getId()).toUri();
+        return ResponseEntity.created(uri).body(new BookDTO(entity));
     }
 
     @GetMapping("/{id}")

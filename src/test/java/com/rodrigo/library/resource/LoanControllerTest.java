@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rodrigo.library.dto.BookDTO;
 import com.rodrigo.library.dto.LoanDTO;
+import com.rodrigo.library.exceptions.BusinessException;
 import com.rodrigo.library.models.entity.Book;
 import com.rodrigo.library.models.entity.Loan;
 import com.rodrigo.library.services.impl.BookService;
@@ -99,7 +100,7 @@ public class LoanControllerTest {
     }
 
     @Test
-    @DisplayName("Deve retornar um erro ao não encontrar um livro pelo isbn")
+    @DisplayName("Deve retornar um erro ao não encontrar um livro quando tentar cadastrar")
     public void returnBookNotFound() throws Exception {
         //cenario
         var loanDto = new LoanDTO(1L, "1234", "Rodrigo lopes");
@@ -118,6 +119,29 @@ public class LoanControllerTest {
         //verificação
         mvc.perform(request)
                 .andExpect(status().isNotFound()).andExpect(jsonPath("errors").value("Book not found"));
+
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao tentar emprestar um livro ja emprestado")
+    public void returnBookAlreadyLoaned() throws Exception {
+        //cenario
+        var loanDto = new LoanDTO(1L, "1234", "Rodrigo lopes");
+        var json = mapper.writeValueAsString(loanDto);
+        var loan = new Loan(loanDto);
+        BDDMockito.given(loanService.save(loan)).willThrow(BusinessException.class);
+
+        //execução
+
+        var request = MockMvcRequestBuilders
+                .post(LOAN_API)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        //verificação
+        mvc.perform(request)
+                .andExpect(status().isBadRequest());
 
     }
 }

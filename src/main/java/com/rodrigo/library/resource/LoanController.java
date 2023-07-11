@@ -6,10 +6,7 @@ import com.rodrigo.library.services.impl.LoanService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
@@ -28,6 +25,14 @@ public class LoanController {
         var uri = builder.buildAndExpand("/api/v1/loans/{id}").expand(salvedLoan.getId()).toUri();
 
         return ResponseEntity.created(uri).body(new LoanDTO(salvedLoan));
+    }
+
+    @GetMapping("book/{isbn}")
+    public ResponseEntity<LoanDTO> getByIsbn(@PathVariable String isbn){
+
+        var book = loanService.getByIsbn(isbn);
+
+        return ResponseEntity.ok().body(new LoanDTO(book));
     }
     
 
