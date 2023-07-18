@@ -24,18 +24,16 @@ public class LoanService {
     public Loan getByIsbn(String isbn){
         var loaned = repository.findByIsbn(isbn);
 
-        if(loaned == null) throw new LoanNotFoundException("this book has not been borrowed");
+        if(loaned == null) throw new EntityNotFoundException("this book has not been borrowed");
 
        return loaned;
     }
     public Loan save(Loan loan) {
 
-      var book = bookRepository.getBookByIsbn(loan.getIsbn());
-      if (book == null) throw new EntityNotFoundException("Book not found.");
-
+        var book = bookRepository.getBookByIsbn(loan.getIsbn());
+        if (book == null) throw new EntityNotFoundException("Book not found.");
 
         var loaned = repository.findByIsbn(loan.getIsbn());
-        System.out.println(loaned);
 
         if(loaned != null) throw new BookAlreadyLoanedException("Book already loaned");
 
