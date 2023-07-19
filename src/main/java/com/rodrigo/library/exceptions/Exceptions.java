@@ -26,7 +26,7 @@ public class Exceptions {
     @ExceptionHandler(BookAlreadyLoanedException.class)
     public ResponseEntity bookAlreadyLoaned(BookAlreadyLoanedException e){
         var error = e.getMessage();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(error));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message(error));
 
     }
 

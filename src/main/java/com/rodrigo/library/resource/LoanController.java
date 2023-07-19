@@ -3,6 +3,7 @@ package com.rodrigo.library.resource;
 import com.rodrigo.library.dto.LoanDTO;
 import com.rodrigo.library.models.entity.Loan;
 import com.rodrigo.library.services.impl.LoanService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/v1/loans")
+@Tag(name = "Library")
 public class LoanController {
     private LoanService loanService;
 
